@@ -1,0 +1,26 @@
+# A separate image containing ONLY the functional test module -- it has no
+# dependency on order-api at all (see order-api-functional-tests/pom.xml),
+# so there's nothing to build here except the tests themselves. This image
+# is meant to run as an OpenShift Job against an already-deployed
+# order-api-springboot Service, with ORDERAPI_BASE_URL supplied at Job
+# creation time.
+
+FROM maven:3-eclipse-temurin-21
+
+# OpenShift Jobs run under the restricted SCC with an arbitrary,
+# randomly-assigned non-root UID that has no /etc/passwd entry, so Maven
+# can't resolve a home directory for it. Same class of problem, same fix
+# shape, as the DOTNET_CLI_HOME issue hit on the .NET version of this demo:
+# give it a HOME that's writable regardless of UID.
+ENV HOME=/tmp
+
+WORKDIR /src
+COPY order-api-functional-tests/ ./order-api-functional-tests/
+
+WORKDIR /src/order-api-functional-tests
+RUN mvn -B -Dmaven.repo.local=/tmp/.m2/repository test-compile
+
+# -o (offline) forces Maven to use only what was already cached into
+# /tmp/.m2/repository during the build above -- no network access needed
+# (or attempted) when this actually runs as a Job.
+ENTRYPOINT ["mvn", "-B", "-o", "-Dmaven.repo.local=/tmp/.m2/repository", "test"]

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-api-springboot
+  labels:
+    app: order-api-springboot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-api-springboot
+  template:
+    metadata:
+      labels:
+        app: order-api-springboot
+    spec:
+      containers:
+        - name: order-api-springboot
+          image: order-api-springboot:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-api-springboot
+  labels:
+    app: order-api-springboot
+spec:
+  selector:
+    app: order-api-springboot
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: order-api-springboot
+  labels:
+    app: order-api-springboot
+spec:
+  to:
+    kind: Service
+    name: order-api-springboot
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

@@ -1,0 +1,33 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: order-api-springboot
+  labels:
+    app: order-api-springboot
+spec:
+  lookupPolicy:
+    local: true
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: order-api-springboot
+  labels:
+    app: order-api-springboot
+spec:
+  source:
+    type: Git
+    git:
+      # If you forked this repo, update uri (and ref, if not deploying from main) to point to your fork.
+      uri: https://github.com/derekkl/springboot-testing-demo.git
+      ref: main
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: order-api-springboot:latest
+  triggers:
+    - type: ConfigChange
