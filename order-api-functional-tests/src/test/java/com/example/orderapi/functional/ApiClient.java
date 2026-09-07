@@ -26,7 +26,14 @@ public final class ApiClient {
 
     private static final String LOCAL_BASE_URL = "http://localhost:8181";
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    // Java's default HttpClient tries to negotiate HTTP/2, but Spring
+    // Boot's embedded Tomcat only speaks HTTP/1.1 over plain cleartext by
+    // default -- that mismatch can surface as a ConnectException/
+    // ClosedChannelException on requests after the first. Pinning to
+    // HTTP/1.1 avoids it entirely.
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .build();
     private final String baseUrl;
     private Process process;
 
