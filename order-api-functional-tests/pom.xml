@@ -26,7 +26,7 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- JSON parsing only -- a general-purpose library, not a dependency on
+    <!-- JSON parsing only, a general-purpose library, not a dependency on
          the app's own code, so the black-box design intent still holds. -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

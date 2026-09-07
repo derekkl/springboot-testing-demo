@@ -47,7 +47,7 @@
         Surefire (unit tests, *Test.java / *Tests.java) runs automatically
         during `mvn test`/`mvn verify` via Spring Boot's parent POM.
 
-        Failsafe (integration tests, *IT.java) does NOT run automatically --
+        Failsafe (integration tests, *IT.java) does NOT run automatically,
         it must be explicitly bound to the integration-test/verify phases,
         which is what this does. This is the Java/Maven idiom for the same
         unit-vs-integration boundary the .NET version draws with separate
