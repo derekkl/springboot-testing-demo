@@ -31,6 +31,16 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
+      Spring Boot 4 moved TestRestTemplate out of spring-boot-starter-test
+      and into this dedicated artifact, it must be declared explicitly
+      now, unlike in Spring Boot 3.
+    -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-resttestclient</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
