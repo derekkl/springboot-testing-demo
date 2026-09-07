@@ -29,6 +29,13 @@ WORKDIR /src/order-api-functional-tests
 # the test run needs into the /tmp/.m2/repository cache for real.
 RUN mvn -B -Dmaven.test.failure.ignore=true -Dmaven.repo.local=/tmp/.m2/repository test
 
+# Surefire creates a fresh target/surefire temp directory on every run.
+# /src was created during this image build and is owned by root with no
+# group-write bit, so a Job's different arbitrary runtime UID (always
+# group 0 under OpenShift's restricted SCC) can't write there otherwise --
+# same class of arbitrary-UID problem as HOME above, different path.
+RUN chmod -R g+rwX /src
+
 # -o (offline) forces Maven to use only what was already cached into
 # /tmp/.m2/repository during the build above -- no network access needed
 # (or attempted) when this actually runs as a Job.
