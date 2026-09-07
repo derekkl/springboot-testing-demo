@@ -41,6 +41,17 @@
       <artifactId>spring-boot-resttestclient</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
+      spring-boot-resttestclient's TestRestTemplateTestAutoConfiguration
+      references RestTemplateBuilder, which now lives in this separate
+      module and is not pulled in transitively by either
+      spring-boot-starter-web or spring-boot-resttestclient in Boot 4.
+    -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-restclient</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
