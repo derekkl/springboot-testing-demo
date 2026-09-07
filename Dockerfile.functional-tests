@@ -18,7 +18,14 @@ WORKDIR /src
 COPY order-api-functional-tests/ ./order-api-functional-tests/
 
 WORKDIR /src/order-api-functional-tests
-RUN mvn -B -Dmaven.repo.local=/tmp/.m2/repository test-compile
+
+# Run through the `test` phase (not just `test-compile`) so Maven resolves
+# and caches the Surefire plugin itself into /tmp/.m2/repository --
+# test-compile stops one phase too early for that, since Surefire only
+# gets invoked during `test`. -DskipTests means it runs (and gets cached)
+# without actually executing the tests, which would fail here anyway
+# since there's no live ORDERAPI_BASE_URL yet at build time.
+RUN mvn -B -DskipTests -Dmaven.repo.local=/tmp/.m2/repository test
 
 # -o (offline) forces Maven to use only what was already cached into
 # /tmp/.m2/repository during the build above -- no network access needed
